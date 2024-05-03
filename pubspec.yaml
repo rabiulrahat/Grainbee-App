@@ -38,6 +38,12 @@ dependencies:
   glass: ^2.0.0+1
   glassmorphism_ui: ^0.3.0
   glossy: ^0.0.4
+  cached_network_image: ^3.3.1
+  glassmorphism_widgets: ^0.2.2
+  crystal_navigation_bar: ^1.0.0
+  iconly: ^1.0.1
+  carousel_slider: ^4.2.1
+  get: ^4.6.6
 
 dev_dependencies:
   flutter_test:

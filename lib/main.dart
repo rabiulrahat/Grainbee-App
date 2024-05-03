@@ -1,25 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:neon_widgets/neon_widgets.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
-import 'package:glossy/glossy.dart';
-import 'package:sodai_app/model/product_model.dart';
+import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
+// import 'package:neon_widgets/neon_widgets.dart';
+// import 'package:glassmorphism_ui/glassmorphism_ui.dart';
+// import 'package:glossy/glossy.dart';
+// import 'package:sodai_app/model/product_model.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
+import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
+import 'product_page.dart';
+import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
+import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+enum _SelectedTab { home, favorite, add, search, person }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of our application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      debugShowCheckedModeBanner: false,
+      title: 'grain bee',
+      theme: ThemeData(
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      themeMode: ThemeMode.dark,
+      home: const HomePage(),
     );
   }
 }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   // This widget is the root of your application.
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: HomePage(),
+//     );
+//   }
+// }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,133 +57,93 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //here i have created dummy product data
-  static List<ProductModel> main_product_lists = [
-    ProductModel()
-  ]
-  void updatedList(String value){
+  // var _selectedTab = _SelectedTab.home;
 
+  // void _handleIndexChanged(int i) {
+  //   setState(() {
+  //     _selectedTab = _SelectedTab.values[i];
+  //   });
+  // }
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle = TextStyle(
+      fontSize: 30,
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+      backgroundColor: Colors.black);
+  static const List<Widget> _widgetOptions = <Widget>[
+    ProductPage(),
+    ProductPage(),
+    ProductPage(),
+    Text(
+      'Index 1: Business',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 2: School',
+      style: optionStyle,
+    ),
+    Text(
+      'Index 3: School',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(221, 26, 26, 26),
-        body: Column(children: [
-          const SizedBox(
-            width: 30,
-            height: 30,
-          ),
+      extendBody: true,
+      body: Center(
+        child: _widgetOptions.elementAt(_selectedIndex),
 
-          Row(
-            children: [
-              const SizedBox(
-                width: 30,
-                height: 30,
-              ),
-              //  Container(child: NeonSearchBar()),\
-              Container(
-                width: 300,
-                height: 50,
-                // color: Colors.red[400],
-                child: TextField(
-                  cursorColor: Colors.white,
-                  style: TextStyle(color: Color.fromARGB(179, 129, 126, 126)),
-                  decoration: InputDecoration(
-                    // hoverColor: Colors.white,
-                    // focusColor: Colors.white,
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 48, 48, 48),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    hintText: 'I Want...',
-                  ),
-                ),
-              ),
-
-              const SizedBox(
-                width: 25,
-                height: 30,
-              ),
-              GlossyContainer(
-                width: 60,
-                height: 50,
-                borderRadius: BorderRadius.circular(12),
-                child: Center(
-                  child: IconButton(
-                    iconSize: 40,
-                    icon: Icon(
-                      Icons.add,
-                    ),
-                    onPressed: () {},
-                    // onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: 30,
-            height: 30,
-          ),
-          Container(
-            width: 150,
-            height: 150,
-            color: Colors.red[400],
-            child: Text(
-              'Red',
-              style: TextStyle(color: Colors.white, fontSize: 20),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: CrystalNavigationBar(
+          currentIndex: _selectedIndex,
+          // _SelectedTab.values.indexOfe(_selectedTab),
+          height: 10,
+          // indicatorColor: Colors.blue,
+          unselectedItemColor: Colors.white70,
+          backgroundColor: Colors.black.withOpacity(0.1),
+          onTap: _onItemTapped,
+          //  _handleIndexChanged,
+          items: [
+            /// Home
+            CrystalNavigationBarItem(
+              icon: IconlyBold.arrow_down_circle,
+              unselectedIcon: IconlyLight.more_circle,
+              selectedColor: Colors.green,
             ),
-          ),
-          SizedBox(
-            width: 30,
-            height: 30,
-          ),
-          Expanded(child: ListView(),),
 
-//           Center(
-//             child: Stack(
-//               children: [
-//                 GlassContainer(
-//   height: 200,
-//   width: 200,
-//   blur: 4,
-//   color: Colors.white.withOpacity(0.1),
-//   gradient: LinearGradient(
-//     begin: Alignment.topLeft,
-//     end: Alignment.bottomRight,
-//     colors: [
-//       Colors.white.withOpacity(0.2),
-//       Colors.blue.withOpacity(0.3),
-//     ],
-//   ),
-//   //--code to remove border
-//   border: Border.fromBorderSide(BorderSide.none),
-//   shadowStrength: 5,
-//   shape: BoxShape.circle,
-//   borderRadius: BorderRadius.circular(16),
-//   shadowColor: Colors.white.withOpacity(0.24),
-// ),
-//                 NeonContainer(
-//                     spreadColor: Colors.greenAccent,
-//                     borderWidth: 2,
-//                     borderColor: Colors.greenAccent,
-//                     borderRadius: BorderRadius.circular(1120.90),
-//                     child: const Image(
-//                         // alignment: Alignment.ce,
-//                         width: 200.0,
-//                         height: 200.0,
-//                         image: AssetImage("assets/image.png"))),
-//               ],
-//             ),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
-        ]));
+            /// Favourite
+            CrystalNavigationBarItem(
+              icon: IconlyBold.bag_2,
+              unselectedIcon: Icons.shopping_bag_rounded,
+              selectedColor: Colors.green,
+            ),
+
+            /// Search
+            CrystalNavigationBarItem(
+                icon: IconlyBold.notification,
+                unselectedIcon: IconlyLight.
+                notification,
+                selectedColor: Colors.green),
+
+            /// Profile
+            CrystalNavigationBarItem(
+              icon: IconlyBold.user_2,
+              unselectedIcon: IconlyLight.user,
+              selectedColor: Colors.green,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

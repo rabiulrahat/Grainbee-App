@@ -1,7 +1,14 @@
-class ProductModel(){
-  String? product_titel;
-  int? product_price;
-  String? product_poster_url;
+class ProductModel {
+  String? productTitle;
+  int? productPrice;
+  String? productPosterUrl;
+  final List<String> productGroup;
 
-  ProductModel(this.product_title,this.product_price,this.product_poster_url)
+
+  ProductModel({
+    required this.productTitle,
+    required this.productPrice,
+    required this.productPosterUrl,
+    required this.productGroup,
+  });
 }
