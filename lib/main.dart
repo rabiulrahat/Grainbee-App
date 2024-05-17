@@ -1,83 +1,63 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
-// import 'package:neon_widgets/neon_widgets.dart';
-// import 'package:glassmorphism_ui/glassmorphism_ui.dart';
-// import 'package:glossy/glossy.dart';
-// import 'package:sodai_app/model/product_model.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
-import 'product_page.dart';
-import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
-import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
+import 'package:provider/provider.dart';
+import 'package:sodai_app/motor_control.dart';
+import 'package:sodai_app/notification_page.dart';
+import 'package:sodai_app/product_cart.dart';
+import 'model/product_model.dart';
+import 'product_page.dart';
+// import 'cart_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-enum _SelectedTab { home, favorite, add, search, person }
-
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of our application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'grain bee',
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+    return ChangeNotifierProvider(
+      create: (context) => ProductCart(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'grain bee',
+        theme: ThemeData(
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        themeMode: ThemeMode.dark,
+        home: HomePage(),
       ),
-      themeMode: ThemeMode.dark,
-      home: const HomePage(),
     );
   }
 }
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: HomePage(),
-//     );
-//   }
-// }
-
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // var _selectedTab = _SelectedTab.home;
-
-  // void _handleIndexChanged(int i) {
-  //   setState(() {
-  //     _selectedTab = _SelectedTab.values[i];
-  //   });
-  // }
   int _selectedIndex = 0;
   static const TextStyle optionStyle = TextStyle(
       fontSize: 30,
       fontWeight: FontWeight.bold,
       color: Colors.black,
       backgroundColor: Colors.black);
-  static const List<Widget> _widgetOptions = <Widget>[
+  static List<Widget> _widgetOptions = <Widget>[
     ProductPage(),
-    ProductPage(),
-    ProductPage(),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
+    Consumer<ProductCart>(
+      builder: (context, cart, child) {
+        return CartScreen(
+          cart: cart.items,
+          removeFromCart: cart.removeFromCart,
+          onQuantityChanged: cart.onQuantityChanged,
+        );
+      },
     ),
+NotificationPage(notifications: notifications),
+    ApiPage(),
     Text(
       'Index 2: School',
       style: optionStyle,
@@ -100,19 +80,15 @@ class _HomePageState extends State<HomePage> {
       extendBody: true,
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
-
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: CrystalNavigationBar(
           currentIndex: _selectedIndex,
-          // _SelectedTab.values.indexOfe(_selectedTab),
           height: 10,
-          // indicatorColor: Colors.blue,
           unselectedItemColor: Colors.white70,
           backgroundColor: Colors.black.withOpacity(0.1),
           onTap: _onItemTapped,
-          //  _handleIndexChanged,
           items: [
             /// Home
             CrystalNavigationBarItem(
@@ -131,8 +107,7 @@ class _HomePageState extends State<HomePage> {
             /// Search
             CrystalNavigationBarItem(
                 icon: IconlyBold.notification,
-                unselectedIcon: IconlyLight.
-                notification,
+                unselectedIcon: IconlyLight.notification,
                 selectedColor: Colors.green),
 
             /// Profile
@@ -145,5 +120,32 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+class ProductCart with ChangeNotifier {
+
+  List<ProductModel> get items => cart;
+
+  void addToCart(ProductModel product) {
+    cart.add(product);
+    notifyListeners();
+  }
+
+  void removeFromCart(ProductModel product) {
+    cart.remove(product);
+    notifyListeners();
+  }
+
+  void onQuantityChanged(ProductModel product, int quantity) {
+    final index = cart.indexWhere((item) => item.productTitle == product.productTitle);
+    if (index != -1) {
+      cart[index].quantity += quantity;
+      if (cart[index].quantity <= 0) {
+        removeFromCart(product);
+      } else {
+        notifyListeners();
+      }
+    }
   }
 }

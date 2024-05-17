@@ -1,13 +1,19 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:neon_widgets/neon_widgets.dart';
 import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:glossy/glossy.dart';
+import 'package:provider/provider.dart';
 import 'package:sodai_app/model/product_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:provider/provider.dart';
+import 'package:sodai_app/product_cart.dart';
+import 'package:badges/badges.dart';
+List<ProductModel> cart = [];
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -95,6 +101,73 @@ class _ProductPageState extends State<ProductPage> {
           .toList();
     });
   }
+
+  ///add to cart function
+  void addToCart(ProductModel product) {
+    setState(() {
+      var existingProductIndex =
+          cart.indexWhere((p) => p.productTitle == product.productTitle);
+      if (existingProductIndex != -1) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Product already added to cart.'),
+          ),
+        );
+      } else {
+        cart.add(ProductModel(
+            productTitle: product.productTitle,
+            productPrice: product.productPrice,
+            productPosterUrl: '',
+            productGroup: []));
+      }
+    });
+  }
+  void removeFromCart(ProductModel product) {
+    setState(() {
+      cart.remove(product);
+    });
+  }
+
+  void navigateToProductDetails(ProductModel product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ProductDetails(
+              product: product,
+              onProductUpdated: (updatedProduct) {
+                setState(() {
+                  var productIndex =
+                      cart.indexWhere((p) => p.productTitle == updatedProduct.productTitle);
+                  if (productIndex != -1) {
+                    cart[productIndex] = updatedProduct;
+                  }
+                });
+              })),
+    );
+  }
+
+  void navigateToCart(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => CartScreen(
+              cart: cart,
+              removeFromCart: removeFromCart,
+              onQuantityChanged: (product, delta) {
+                setState(() {
+                  var productIndex =
+                      cart.indexWhere((p) => p.productTitle == product.productTitle);
+                  if (productIndex != -1) {
+                    cart[productIndex].quantity += delta;
+                    if (cart[productIndex].quantity <= 0) {
+                      cart.removeAt(productIndex);
+                    }
+                  }
+                });
+              })),
+    );
+  }
+
   //i have to fix it
   // void groupList(String value) {
   //   setState(() {
@@ -107,7 +180,6 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    //  var onPressed;
     return Scaffold(
       backgroundColor: Color.fromARGB(221, 26, 26, 26),
       body: Column(
@@ -127,7 +199,7 @@ class _ProductPageState extends State<ProductPage> {
                 width: 300,
                 height: 50,
                 // color: Colors.red[400],
-              //  product search bar
+                //  product search bar
                 child: TextField(
                   onChanged: (value) => updatedList(value),
                   cursorColor: Colors.white,
@@ -151,23 +223,15 @@ class _ProductPageState extends State<ProductPage> {
                 width: 10,
                 height: 30,
               ),
+             FloatingActionButton.extended(
+        onPressed: () {
+          navigateToCart(context);
+        },
+        label: Text('Cart (${cart.length})'),
+        icon: Icon(Icons.shopping_cart),
+      ),
               //this is filter button after search bar
-              GlossyContainer(
-                width: 50,
-                height: 50,
-                borderRadius: BorderRadius.circular(12),
-                child: Center(
-                  child: IconButton(
-                    iconSize: 30,
-                    icon: Icon(
-                      Icons.settings,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {},
-                    // onPressed: () {},
-                  ),
-                ),
-              ),
+
               // GlassButton(
               //   borderRadius: BorderRadius.circular(12),
               //   onPressed: () {
@@ -194,17 +258,54 @@ class _ProductPageState extends State<ProductPage> {
           //     ),
           //   ),
           // ),
-          Row(
-            children: [
-              //here  button for vegetable
-              SizedBox(
-                width: 10,
-              ),
-              GestureDetector(
-                // onTap: onPressed,
-                child: Container(
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+            child: Row(
+              children: [
+                //here  button for vegetable
+                SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  // onTap: onPressed,
+                  //button for vegetables
+                  child: Container(
+                    height: 100,
+                    width: 90,
+                    child: GlassFlexContainer(
+                      border: BorderSide.strokeAlignInside,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              child: Image(
+                                image: NetworkImage(
+                                    'https://freepngimg.com/thumb/cucumber/1-2-cucumber-png-hd-thumb.png'),
+                                width: 60,
+                                height: 50,
+                              ),
+                            ),
+                          ),
+                          Center(
+                              child: GlassText(
+                            "Vegetable",
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          )),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                  height: 30,
+                ),
+                Container(
                   height: 100,
-                  width: 80,
+                  width: 90,
                   child: GlassFlexContainer(
                     border: BorderSide.strokeAlignInside,
                     child: Column(
@@ -214,7 +315,7 @@ class _ProductPageState extends State<ProductPage> {
                           child: Container(
                             child: Image(
                               image: NetworkImage(
-                                  'https://freepngimg.com/thumb/cucumber/1-2-cucumber-png-hd-thumb.png'),
+                                  'https://freepngimg.com/thumb/strawberry/1-strawberry-png-images.png'),
                               width: 60,
                               height: 50,
                             ),
@@ -222,7 +323,7 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                         Center(
                             child: GlassText(
-                          "Vegetable",
+                          "Fruits",
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         )),
@@ -230,40 +331,108 @@ class _ProductPageState extends State<ProductPage> {
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 10,
-                height: 30,
-              ),
-              Container(
-                height: 100,
-                width: 80,
-                child: GlassFlexContainer(
-                  border: BorderSide.strokeAlignInside,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          child: Image(
-                            image: NetworkImage(
-                                'https://freepngimg.com/thumb/strawberry/1-strawberry-png-images.png'),
-                            width: 60,
-                            height: 50,
+
+                SizedBox(
+                  width: 10,
+                  height: 30,
+                ),
+
+                Container(
+                  height: 100,
+                  width: 90,
+                  child: GlassFlexContainer(
+                    border: BorderSide.strokeAlignInside,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            child: Image(
+                              image: NetworkImage(
+                                  'https://freepngimg.com/thumb/strawberry/1-strawberry-png-images.png'),
+                              width: 60,
+                              height: 50,
+                            ),
                           ),
                         ),
-                      ),
-                      Center(
-                          child: GlassText(
-                        "Fruits",
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      )),
-                    ],
+                        Center(
+                            child: GlassText(
+                          "Fruits",
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: 10,
+                  height: 30,
+                ),
+
+                Container(
+                  height: 100,
+                  width: 90,
+                  child: GlassFlexContainer(
+                    border: BorderSide.strokeAlignInside,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            child: Image(
+                              image: NetworkImage(
+                                  'https://freepngimg.com/thumb/strawberry/1-strawberry-png-images.png'),
+                              width: 60,
+                              height: 50,
+                            ),
+                          ),
+                        ),
+                        Center(
+                            child: GlassText(
+                          "Fruits",
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                  height: 30,
+                ),
+
+                Container(
+                  height: 100,
+                  width: 90,
+                  child: GlassFlexContainer(
+                    border: BorderSide.strokeAlignInside,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            child: Image(
+                              image: NetworkImage(
+                                  'https://freepngimg.com/thumb/strawberry/1-strawberry-png-images.png'),
+                              width: 60,
+                              height: 50,
+                            ),
+                          ),
+                        ),
+                        Center(
+                            child: GlassText(
+                          "Fruits",
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        )),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           //this slider or ad section
           CarouselSlider(
@@ -370,6 +539,8 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       itemCount: product_display.length,
                       itemBuilder: (BuildContext context, int index) {
+                      final product = product_display[index];
+
                         return Column(
                           children: [
                             SizedBox(
@@ -381,115 +552,125 @@ class _ProductPageState extends State<ProductPage> {
                                       SnackBar(
                                           content: Text('Gesture Detected!')));
                                 },
-                                child: Card(
-                                  color: Color.fromARGB(255, 48, 48, 48),
-                                  clipBehavior: Clip.antiAlias,
-                                  child: Column(
-                                    children: [
-                                      // SizedBox(
-                                      //   child: Image(
-                                      //       // alignment: Alignment.ce,
-                                      //       width: 80.0,
-                                      //       height: 80.0,
-                                      //       image: NetworkImage(product_display[index]
-                                      //           .productPosterUrl!)),
-                                      // ),
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: NeonPoint(
-                                          pointSize: 00,
-                                          spreadColor:
-                                              Colors.green.withOpacity(0.5),
-                                          lightSpreadRadius: 90,
-                                        ),
-                                      ),
-                                      Container(
-                                        // spreadColor: Colors.green,
-                                        // borderWidth: 0,
-                                        // borderColor: Colors.greenAccent,
-                                        // borderRadius: BorderRadius.circular(1000.90),
-                                        child:
-                                            // Image.network(
-                                            //   product_display[index].productPosterUrl!,
-                                            //   fit: BoxFit.contain,
-                                            // ),
-                                            //     CachedNetworkImage(
-                                            //   imageUrl:
-                                            //       product_display[index].productPosterUrl!,
-                                            //   placeholder: (context, url) =>
-                                            //       CircularProgressIndicator(),
-                                            //   errorWidget: (context, url, error) =>
-                                            //       Icon(Icons.error),
-                                            // ),
-                                            Column(
-                                          children: [
-                                            Row(
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      color: Color.fromARGB(255, 48, 48, 48),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: Column(
+                                        children: [
+                                          // SizedBox(
+                                          //   child: Image(
+                                          //       // alignment: Alignment.ce,
+                                          //       width: 80.0,
+                                          //       height: 80.0,
+                                          //       image: NetworkImage(product_display[index]
+                                          //           .productPosterUrl!)),
+                                          // ),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: NeonPoint(
+                                              pointSize: 00,
+                                              spreadColor:
+                                                  Colors.green.withOpacity(0.5),
+                                              lightSpreadRadius: 90,
+                                            ),
+                                          ),
+                                          Container(
+                                            // spreadColor: Colors.green,
+                                            // borderWidth: 0,
+                                            // borderColor: Colors.greenAccent,
+                                            // borderRadius: BorderRadius.circular(1000.90),
+                                            child:
+                                                // Image.network(
+                                                //   product_display[index].productPosterUrl!,
+                                                //   fit: BoxFit.contain,
+                                                // ),
+                                                //     CachedNetworkImage(
+                                                //   imageUrl:
+                                                //       product_display[index].productPosterUrl!,
+                                                //   placeholder: (context, url) =>
+                                                //       CircularProgressIndicator(),
+                                                //   errorWidget: (context, url, error) =>
+                                                //       Icon(Icons.error),
+                                                // ),
+                                                Column(
                                               children: [
-                                                SizedBox(
-                                                  width: 20,
+                                                Row(
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 20,
+                                                    ),
+                                                    Image(
+                                                        // alignment: Alignment.ce,
+                                                        width: 100.0,
+                                                        height: 100.0,
+                                                        fit: BoxFit.cover,
+                                                        image: NetworkImage(
+                                                            product_display[
+                                                                    index]
+                                                                .productPosterUrl!)),
+                                                  ],
                                                 ),
-                                                Image(
-                                                    // alignment: Alignment.ce,
-                                                    width: 100.0,
-                                                    height: 100.0,
-                                                    fit: BoxFit.cover,
-                                                    image: NetworkImage(
-                                                        product_display[index]
-                                                            .productPosterUrl!)),
                                               ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              product_display[index]
-                                                  .productTitle!,
-                                              style: TextStyle(
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  product_display[index]
+                                                      .productTitle!,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 20),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          Padding(
+                                            padding: const EdgeInsets.all(3.0),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  "৳ " +
+                                                      "${product_display[index].productPrice}",
+                                                  style: TextStyle(
+                                                      color: Colors.greenAccent,
+                                                      fontSize: 20),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          // Image.asset('assets/card-sample-image-2.jpg'),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.green,
+                                                  shape: CircleBorder(),
+                                                ),
+                                                onPressed: () {
+                                                  addToCart(product);
+                                                },
+                                                child: const Icon(
+                                                  Icons.shopping_bag_outlined,
                                                   color: Colors.white,
-                                                  fontSize: 20),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "৳ " +
-                                                  "${product_display[index].productPrice}",
-                                              style: TextStyle(
-                                                  color: Colors.greenAccent,
-                                                  fontSize: 20),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.green,
-                                              shape: CircleBorder(),
-                                            ),
-                                            onPressed: () {},
-                                            child: const Icon(
-                                              Icons.shopping_bag_outlined,
-                                              color: Colors.white,
-                                              size: 20,
-                                            ),
+                                                  size: 20,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
-                                      // Image.asset('assets/card-sample-image-2.jpg'),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
