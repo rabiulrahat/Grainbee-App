@@ -1,18 +1,18 @@
-import 'package:badges/badges.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:neon_widgets/neon_widgets.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
-import 'package:glossy/glossy.dart';
 import 'package:provider/provider.dart';
+import 'package:sodai_app/main.dart';
+// import 'package:glossy/glossy.dart';
 import 'package:sodai_app/model/product_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:sodai_app/product_cart.dart';
-import 'package:badges/badges.dart';
+
+// import 'package:badges/badges.dart';
 List<ProductModel> cart = [];
 
 class ProductPage extends StatefulWidget {
@@ -122,6 +122,7 @@ class _ProductPageState extends State<ProductPage> {
       }
     });
   }
+
   void removeFromCart(ProductModel product) {
     setState(() {
       cart.remove(product);
@@ -136,8 +137,8 @@ class _ProductPageState extends State<ProductPage> {
               product: product,
               onProductUpdated: (updatedProduct) {
                 setState(() {
-                  var productIndex =
-                      cart.indexWhere((p) => p.productTitle == updatedProduct.productTitle);
+                  var productIndex = cart.indexWhere(
+                      (p) => p.productTitle == updatedProduct.productTitle);
                   if (productIndex != -1) {
                     cart[productIndex] = updatedProduct;
                   }
@@ -155,8 +156,8 @@ class _ProductPageState extends State<ProductPage> {
               removeFromCart: removeFromCart,
               onQuantityChanged: (product, delta) {
                 setState(() {
-                  var productIndex =
-                      cart.indexWhere((p) => p.productTitle == product.productTitle);
+                  var productIndex = cart.indexWhere(
+                      (p) => p.productTitle == product.productTitle);
                   if (productIndex != -1) {
                     cart[productIndex].quantity += delta;
                     if (cart[productIndex].quantity <= 0) {
@@ -223,24 +224,32 @@ class _ProductPageState extends State<ProductPage> {
                 width: 10,
                 height: 30,
               ),
-             FloatingActionButton.extended(
-        onPressed: () {
-          navigateToCart(context);
-        },
-        label: Text('Cart (${cart.length})'),
-        icon: Icon(Icons.shopping_cart),
-      ),
+              Container(
+                height: 50,
+                width: 60,
+                child: FloatingActionButton.extended(
+                  onPressed: () {
+                    navigateToCart(context);
+                  },
+                  label: Text('Cart (${cart.length})'),
+                  icon: Icon(Icons.shopping_cart),
+                ),
+              ),
               //this is filter button after search bar
 
-              // GlassButton(
-              //   borderRadius: BorderRadius.circular(12),
-              //   onPressed: () {
-              //     showGlassBottomSheet(
-              //         context: context,
-              //         child: Center(
-              //             child: GlassText("Hello World", fontSize: 20)));
-              //   },
-              //   child: GlassText("Button"),
+              // Container(
+              //   height: 50,
+              //   width:60,
+              //   child: GlassButton(
+              //     borderRadius: BorderRadius.circular(12),
+              //     onPressed: () {
+              //       showGlassBottomSheet(
+              //           context: context,
+              //           child: Center(
+              //               child: GlassText("Hello World", fontSize: 20)));
+              //     },
+              //     child: GlassText("Button"),
+              //   ),
               // ),
             ],
           ),
@@ -539,7 +548,7 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       itemCount: product_display.length,
                       itemBuilder: (BuildContext context, int index) {
-                      final product = product_display[index];
+                        final product = product_display[index];
 
                         return Column(
                           children: [

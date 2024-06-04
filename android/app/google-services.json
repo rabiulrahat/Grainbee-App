@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "156799547924",
+    "project_id": "grainbee-267a9",
+    "storage_bucket": "grainbee-267a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156799547924:android:2815810d249cfb0bb58501",
+        "android_client_info": {
+          "package_name": "com.example.firebase_sign_in_and_up"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156799547924-jb91tvjv1nbr4euf6e00u08i5516a1t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-uYb1XUxXT1MIvQCC2SIBbVbHaTY86Sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156799547924-jb91tvjv1nbr4euf6e00u08i5516a1t9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156799547924:android:ae290be86f2f5247b58501",
+        "android_client_info": {
+          "package_name": "com.example.sodai_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156799547924-jb91tvjv1nbr4euf6e00u08i5516a1t9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-uYb1XUxXT1MIvQCC2SIBbVbHaTY86Sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156799547924-jb91tvjv1nbr4euf6e00u08i5516a1t9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

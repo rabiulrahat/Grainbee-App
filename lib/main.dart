@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
+// import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
+import 'package:flutter/rendering.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:sodai_app/motor_control.dart';
@@ -9,11 +10,35 @@ import 'package:sodai_app/notification_page.dart';
 import 'package:sodai_app/product_cart.dart';
 import 'model/product_model.dart';
 import 'product_page.dart';
+// import 'package:firebase_core/firebase_core.dart';
+
 // import 'cart_screen.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //     options: FirebaseOptions(
+  //   apiKey: "AIzaSyDUsR4F_nxc7uTv-5ikLx3yrRPYCQo6M0w",
+  //   projectId: "grainbee-267a9",
+  //   messagingSenderId: "156799547924",
+  //   appId: "1:156799547924:web:d8d79dd231755707b58501",
+  // )
+  // );
+  //   await Firebase.initializeApp(
+  // );
 }
+
+// class DefaultFirebaseOptions {
+//   static FirebaseOptions get currentPlatform {
+//     return FirebaseOptions(
+//       apiKey: "AIzaSyDUsR4F_nxc7uTv-5ikLx3yrRPYCQo6M0w",
+//       projectId: "grainbee-267a9",
+//       messagingSenderId: "156799547924",
+//       appId: "1:156799547924:web:d8d79dd231755707b58501",
+//     );
+//   }
+// }
 
 class MyApp extends StatelessWidget {
   @override
@@ -56,16 +81,16 @@ class _HomePageState extends State<HomePage> {
         );
       },
     ),
-NotificationPage(notifications: notifications),
+    NotificationPage(notifications: notifications),
     ApiPage(),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 3: School',
-      style: optionStyle,
-    ),
+    // Text(
+    //   'Index 2: School',
+    //   style: optionStyle,
+    // ),
+    // Text(
+    //   'Index 3: School',
+    //   style: optionStyle,
+    // ),
   ];
 
   void _onItemTapped(int index) {
@@ -124,7 +149,6 @@ NotificationPage(notifications: notifications),
 }
 
 class ProductCart with ChangeNotifier {
-
   List<ProductModel> get items => cart;
 
   void addToCart(ProductModel product) {
@@ -138,7 +162,8 @@ class ProductCart with ChangeNotifier {
   }
 
   void onQuantityChanged(ProductModel product, int quantity) {
-    final index = cart.indexWhere((item) => item.productTitle == product.productTitle);
+    final index =
+        cart.indexWhere((item) => item.productTitle == product.productTitle);
     if (index != -1) {
       cart[index].quantity += quantity;
       if (cart[index].quantity <= 0) {
