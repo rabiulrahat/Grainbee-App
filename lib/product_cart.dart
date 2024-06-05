@@ -1,11 +1,193 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sodai_app/model/product_model.dart';
 import 'package:glassmorphism_widgets/glassmorphism_widgets.dart';
 import 'package:intl/intl.dart';
 
+// class CartScreen extends StatefulWidget {
+//   final List<ProductModel> cart;
+//   final Function(ProductModel) removeFromCart;
+//   final Function(ProductModel, int) onQuantityChanged;
+
+//   CartScreen({
+//     Key? key,
+//     required this.cart,
+//     required this.removeFromCart,
+//     required this.onQuantityChanged,
+//   }) : super(key: key);
+
+//   @override
+//   _CartScreenState createState() => _CartScreenState();
+// }
+
+// class _CartScreenState extends State<CartScreen> {
+//   final _addressController = TextEditingController();
+//   String _deliveryAddress = '';
+
+//   @override
+//   Widget build(BuildContext context) {
+
+//     double totalAmount = 0;
+//     for (var product in widget.cart) {
+//       totalAmount += product.productPrice! * product.quantity;
+//     }
+
+//     return Scaffold(
+//       backgroundColor:  Color.fromARGB(221, 26, 26, 26),
+//       // appBar: AppBar(
+//       //   backgroundColor:  Color.fromARGB(221, 233, 222, 222),
+//       //   title: Text('Cart'),
+//       //   leading: IconButton(
+//       //     icon: Icon(Icons.arrow_back),
+//       //     onPressed: () {
+//       //       Navigator.pop(context);
+//       //     },
+//       //   ),
+//       // ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             // // Editable delivery address field
+//             // TextFormField(
+//             //   controller: _addressController,
+//             //   onChanged: (value) {
+//             //     setState(() {
+//             //       _deliveryAddress = value;
+//             //     });
+//             //   },
+//             //   decoration: InputDecoration(
+//             //     labelText: 'Delivery Address',
+//             //     labelStyle: TextStyle(color: Colors.white),
+//             //     enabledBorder: UnderlineInputBorder(
+//             //       borderSide: BorderSide(color: Colors.white),
+//             //     ),
+//             //   ),
+//             //   style: TextStyle(color: Colors.white),
+//             //   cursorColor: Colors.white,
+//             // ),
+//             // SizedBox(height: 16.0),
+//         Flexible(
+//               child: ListView.builder(
+//                 itemCount: widget.cart.length,
+//                 itemBuilder: (context, index) {
+//                   final product = widget.cart[index];
+//                   return ListTile(
+//                     title: Text(
+//                       product.productTitle.toString(),
+//                       style: TextStyle(color: Colors.white),
+//                     ),
+//                     subtitle: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           '\$${(product.productPrice! * product.quantity).toString()}',
+//                           style: TextStyle(color: Colors.white70),
+//                         ),
+//                         Row(
+//                           children: [
+//                             IconButton(
+//                               onPressed: () {
+//                                 setState(() {
+//                                   widget.onQuantityChanged(product, -1);
+//                                 });
+//                               },
+//                               icon: Icon(Icons.remove),
+//                               color: Colors.white,
+//                             ),
+//                             Text(
+//                               product.quantity.toString(),
+//                               style: TextStyle(color: Colors.white),
+//                             ),
+//                             IconButton(
+//                               onPressed: () {
+//                                 setState(() {
+//                                   widget.onQuantityChanged(product, 1);
+//                                 });
+//                               },
+//                               icon: Icon(Icons.add),
+//                               color: Colors.white,
+//                             ),
+//                             IconButton(
+//                               onPressed: () {
+//                                 widget.removeFromCart(product);
+//                                 setState(() {}); // Trigger a rebuild
+//                               },
+//                               icon: Icon(Icons.delete),
+//                               color: Colors.white,
+//                             ),
+//                           ],
+//                         ),
+
+//                       ],
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ),
+//              Row(
+//               children: [
+//                 Expanded(
+//                   child: GlassContainer(
+//                     width: double.infinity,
+//                     height: 56,
+//                     // borderRadius: 8.0,
+//                     blur: 10,
+//                     border: 2,
+//                     linearGradient: LinearGradient(
+//                       begin: Alignment.topLeft,
+//                       end: Alignment.bottomRight,
+//                       colors: [
+//                         Color(0xFF0099FF).withOpacity(0.1),
+//                         Color(0xFF0099FF).withOpacity(0.05),
+//                       ],
+//                     ),
+//                     child: ElevatedButton(
+//                       onPressed: () {
+//                         Navigator.push(
+//                           context,
+//                           MaterialPageRoute(
+//                             builder: (context) => PaymentPage(
+//                               deliveryAddress: _deliveryAddress,
+//                               cart: widget.cart,
+//                             ),
+//                           ),
+//                         );
+//                       },
+//                       child: Text('Pay with Bkash \৳ ${totalAmount.toStringAsFixed(2)} Taka'),
+//                       style: ElevatedButton.styleFrom(
+//                         shadowColor: Colors.transparent,
+//                         padding: EdgeInsets.symmetric(
+//                             horizontal: 32.0, vertical: 16.0),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             // Bkash payment option with glassy effect
+//             Container(
+//               child: Text(
+//                 'Total Amount: \$${totalAmount.toStringAsFixed(2)}',
+//                 style: TextStyle(fontWeight: FontWeight.bold),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   @override
+//   void dispose() {
+//     _addressController.dispose();
+//     super.dispose();
+//   }
+// }
 class CartScreen extends StatefulWidget {
   final List<ProductModel> cart;
   final Function(ProductModel) removeFromCart;
@@ -28,10 +210,15 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double totalAmount = 0;
+    for (var product in widget.cart) {
+      totalAmount += product.productPrice! * product.quantity;
+    }
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromARGB(221, 26, 26, 26),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(221, 233, 222, 222),
         title: Text('Cart'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -45,26 +232,7 @@ class _CartScreenState extends State<CartScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Editable delivery address field
-            TextFormField(
-              controller: _addressController,
-              onChanged: (value) {
-                setState(() {
-                  _deliveryAddress = value;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Delivery Address',
-                labelStyle: TextStyle(color: Colors.white),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-              ),
-              style: TextStyle(color: Colors.white),
-              cursorColor: Colors.white,
-            ),
-            SizedBox(height: 16.0),
-            Expanded(
+            Flexible(
               child: ListView.builder(
                 itemCount: widget.cart.length,
                 itemBuilder: (context, index) {
@@ -115,54 +283,53 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ],
                         ),
-                         Row(
-                          children: [
-                            Expanded(
-                              child: GlassContainer(
-                                width: double.infinity,
-                                height: 56,
-                                // borderRadius: 8.0,
-                                blur: 10,
-                                border: 2,
-                                linearGradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFF0099FF).withOpacity(0.1),
-                                    Color(0xFF0099FF).withOpacity(0.05),
-                                  ],
-                                ),
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PaymentPage(
-                                          deliveryAddress: _deliveryAddress,
-                                          cart: widget.cart,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  child: Text('Pay with Bkash'),
-                                  style: ElevatedButton.styleFrom(
-                                    shadowColor: Colors.transparent,
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 32.0, vertical: 16.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   );
                 },
               ),
             ),
-            // Bkash payment option with glassy effect
-
+            Row(
+              children: [
+                Expanded(
+                  child: GlassContainer(
+                    width: double.infinity,
+                    height: 56,
+                    // borderRadius: 8.0,
+                    blur: 10,
+                    border: 2,
+                    linearGradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0xFF0099FF).withOpacity(0.1),
+                        Color(0xFF0099FF).withOpacity(0.05),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentPage(
+                              deliveryAddress: _deliveryAddress,
+                              cart: widget.cart,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                          'Pay with Bkash \৳ ${totalAmount.toStringAsFixed(2)} Taka'),
+                      style: ElevatedButton.styleFrom(
+                        shadowColor: Colors.transparent,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 32.0, vertical: 16.0),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -190,7 +357,9 @@ class ProductDetails extends StatelessWidget {
     onProductUpdated(ProductModel(
         productTitle: product.productTitle,
         productPrice: product.productPrice,
-        quantity: product.quantity + 1, productGroup: [], productPosterUrl: ''));
+        quantity: product.quantity + 1,
+        productGroup: [],
+        productPosterUrl: ''));
   }
 
   void decreaseQuantity() {
@@ -198,7 +367,9 @@ class ProductDetails extends StatelessWidget {
       onProductUpdated(ProductModel(
           productTitle: product.productTitle,
           productPrice: product.productPrice,
-          quantity: product.quantity - 1, productPosterUrl: '', productGroup: []));
+          quantity: product.quantity - 1,
+          productPosterUrl: '',
+          productGroup: []));
     }
   }
 
@@ -342,3 +513,7 @@ class _PaymentPageState extends State<PaymentPage> {
     );
   }
 }
+  // Text(
+  //             'Total Amount: \$${totalAmount.toStringAsFixed(2)}',
+  //             style: TextStyle(fontWeight: FontWeight.bold),
+  //           ),

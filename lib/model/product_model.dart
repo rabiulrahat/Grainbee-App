@@ -16,4 +16,5 @@ class ProductModel {
        this.status = 'In Stock', // Add this line and set a default value if needed
 
   });
+
 }

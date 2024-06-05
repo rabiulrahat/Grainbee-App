@@ -82,7 +82,8 @@ class _HomePageState extends State<HomePage> {
       },
     ),
     NotificationPage(notifications: notifications),
-    ApiPage(),
+    // ApiPage(),
+    // MPage()
     // Text(
     //   'Index 2: School',
     //   style: optionStyle,
@@ -122,12 +123,13 @@ class _HomePageState extends State<HomePage> {
               selectedColor: Colors.green,
             ),
 
-            /// Favourite
+            // / Favourite
             CrystalNavigationBarItem(
               icon: IconlyBold.bag_2,
               unselectedIcon: Icons.shopping_bag_rounded,
               selectedColor: Colors.green,
             ),
+
 
             /// Search
             CrystalNavigationBarItem(
