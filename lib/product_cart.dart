@@ -342,7 +342,148 @@ class _CartScreenState extends State<CartScreen> {
     super.dispose();
   }
 }
+class PaymentPage extends StatefulWidget {
+  final String deliveryAddress;
+  final List<ProductModel> cart;
 
+  PaymentPage({
+    Key? key,
+    required this.deliveryAddress,
+    required this.cart,
+  }) : super(key: key);
+
+  @override
+  _PaymentPageState createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _bkashNumber = '';
+  bool _isProcessing = false;
+  bool _isSuccess = false;
+
+  @override
+  Widget build(BuildContext context) {
+    double totalAmount = 0;
+    for (var product in widget.cart) {
+      totalAmount += product.productPrice! * product.quantity;
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Payment'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Order summary
+            Text(
+              'Order Summary',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16.0),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: widget.cart.length,
+              itemBuilder: (BuildContext context, int index) {
+                ProductModel product = widget.cart[index];
+                return ListTile(
+                  title: Text(product.productTitle as String),
+                  subtitle:
+                      Text('${product.quantity} x \$${product.productPrice}'),
+                  trailing: Text(
+                      '\$${(product.quantity * product.productPrice!).toStringAsFixed(2)}'),
+                );
+              },
+            ),
+            SizedBox(height: 16.0),
+            Text(
+              'Total Amount: \$${totalAmount.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 32.0),
+            // Payment form
+            Text(
+              'Payment Information',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16.0),
+            Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(
+                      labelText: 'Bkash Number',
+                      hintText: '01XXXXXXXXXX',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter your Bkash number';
+                      }
+                      if (value.length < 11) {
+                        return 'Please enter a valid Bkash number';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => _bkashNumber = value!,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 32.0),
+            // Pay now button
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  setState(() {
+                    _isProcessing = true;
+                  });
+                  Future.delayed(Duration(seconds: 2), () {
+                    setState(() {
+                      _isProcessing = false;
+                      _isSuccess = true;
+                    });
+                  });
+                }
+              },
+              child:
+                  _isProcessing ? CircularProgressIndicator() : Text('Pay Now'),
+            ),
+            SizedBox(height: 32.0),
+            // Confirmation message
+            if (_isSuccess)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Thank You!',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    'Your payment has been processed successfully. Your order will be delivered to the following address:',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    widget.deliveryAddress,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 class ProductDetails extends StatelessWidget {
   final ProductModel product;
   final Function(ProductModel) onProductUpdated;
@@ -384,17 +525,26 @@ class ProductDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('\$${product.productPrice.toString()}'),
+            Text(
+              '\$${product.productPrice.toString()}',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+            SizedBox(height: 8.0),
             Row(
               children: [
                 IconButton(
                   onPressed: increaseQuantity,
-                  icon: Icon(Icons.add),
+                  icon: Icon(Icons.add, color: Colors.white),
                 ),
-                Text(product.quantity.toString()),
+                Text(
+                  product.quantity.toString(),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ),
                 IconButton(
                   onPressed: decreaseQuantity,
-                  icon: Icon(Icons.remove),
+                  icon: Icon(Icons.remove, color: Colors.white),
                 ),
               ],
             ),
@@ -405,115 +555,177 @@ class ProductDetails extends StatelessWidget {
   }
 }
 
-class PaymentPage extends StatefulWidget {
-  final String deliveryAddress;
-  final List<ProductModel> cart;
+// class ProductDetails extends StatelessWidget {
+//   final ProductModel product;
+//   final Function(ProductModel) onProductUpdated;
 
-  PaymentPage({
-    Key? key,
-    required this.deliveryAddress,
-    required this.cart,
-  }) : super(key: key);
+//   const ProductDetails({
+//     Key? key,
+//     required this.product,
+//     required this.onProductUpdated,
+//   }) : super(key: key);
 
-  @override
-  _PaymentPageState createState() => _PaymentPageState();
-}
+//   void increaseQuantity() {
+//     onProductUpdated(ProductModel(
+//         productTitle: product.productTitle,
+//         productPrice: product.productPrice,
+//         quantity: product.quantity + 1,
+//         productGroup: [],
+//         productPosterUrl: ''));
+//   }
 
-class _PaymentPageState extends State<PaymentPage> {
-  final _phoneController = TextEditingController();
-  bool _isPaymentSuccess = false;
+//   void decreaseQuantity() {
+//     if (product.quantity > 1) {
+//       onProductUpdated(ProductModel(
+//           productTitle: product.productTitle,
+//           productPrice: product.productPrice,
+//           quantity: product.quantity - 1,
+//           productPosterUrl: '',
+//           productGroup: []));
+//     }
+//   }
 
-  DateTime generateRandomDate({int range = 7}) {
-    final now = DateTime.now();
-    final random = Random();
-    final daysFromNow = random.nextInt(range) + 1;
-    return now.add(Duration(days: daysFromNow));
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(product.productTitle.toString()),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text('\$${product.productPrice.toString()}'),
+//             Row(
+//               children: [
+//                 IconButton(
+//                   onPressed: increaseQuantity,
+//                   icon: Icon(Icons.add),
+//                 ),
+//                 Text(product.quantity.toString()),
+//                 IconButton(
+//                   onPressed: decreaseQuantity,
+//                   icon: Icon(Icons.remove),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Payment'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Delivery address display
-            Text(
-              'Delivery Address:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(widget.deliveryAddress),
-            SizedBox(height: 16.0),
-            // Phone number input field
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              decoration: InputDecoration(
-                labelText: 'Phone Number (for MFS payment)',
-              ),
-            ),
-            SizedBox(height: 16.0),
-            // Payment button
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Implement MFS payment logic here
+// class PaymentPage extends StatefulWidget {
+//   final String deliveryAddress;
+//   final List<ProductModel> cart;
 
-                // For now, simulate a successful payment
-                setState(() {
-                  _isPaymentSuccess = true;
-                });
-              },
-              child: Text('Proceed to Payment'),
-            ),
-            if (_isPaymentSuccess) ...[
-              SizedBox(height: 32.0),
-              // Payment success message
-              Text(
-                'Payment Successful!',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16.0),
-              // Order details display
-              Text(
-                'Your Order:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              ...widget.cart
-                  .map((product) => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(product.productTitle.toString()),
-                          Text(
-                              '\$${(product.productPrice! * product.quantity).toString()}'),
-                          SizedBox(height: 8.0),
-                        ],
-                      ))
-                  .toList(),
-              SizedBox(height: 16.0),
-              // Order and delivery date display
-              Text(
-                'Order will be delivered by:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                DateFormat('dd-MM-yyyy').format(
-                    generateRandomDate()), // Generate a random delivery date
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-  // Text(
-  //             'Total Amount: \$${totalAmount.toStringAsFixed(2)}',
-  //             style: TextStyle(fontWeight: FontWeight.bold),
-  //           ),
+//   PaymentPage({
+//     Key? key,
+//     required this.deliveryAddress,
+//     required this.cart,
+//   }) : super(key: key);
+
+//   @override
+//   _PaymentPageState createState() => _PaymentPageState();
+// }
+
+// class _PaymentPageState extends State<PaymentPage> {
+//   final _phoneController = TextEditingController();
+//   bool _isPaymentSuccess = false;
+
+//   DateTime generateRandomDate({int range = 7}) {
+//     final now = DateTime.now();
+//     final random = Random();
+//     final daysFromNow = random.nextInt(range) + 1;
+//     return now.add(Duration(days: daysFromNow));
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Payment'),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             // Delivery address display
+//             Text(
+//               'Delivery Address:',
+//               style: TextStyle(fontWeight: FontWeight.bold),
+//             ),
+//             Text(widget.deliveryAddress),
+//             SizedBox(height: 16.0),
+//             // Phone number input field
+//             TextFormField(
+//               controller: _phoneController,
+//               keyboardType: TextInputType.phone,
+//               inputFormatters: [
+//                 FilteringTextInputFormatter.digitsOnly,
+//               ],
+//               decoration: InputDecoration(
+//                 labelText: 'Phone Number (for MFS payment)',
+//               ),
+//             ),
+//             SizedBox(height: 16.0),
+//             // Payment button
+//             ElevatedButton(
+//               onPressed: () {
+//                 // TODO: Implement MFS payment logic here
+
+//                 // For now, simulate a successful payment
+//                 setState(() {
+//                   _isPaymentSuccess = true;
+//                 });
+//               },
+//               child: Text('Proceed to Payment'),
+//             ),
+//             if (_isPaymentSuccess) ...[
+//               SizedBox(height: 32.0),
+//               // Payment success message
+//               Text(
+//                 'Payment Successful!',
+//                 style: TextStyle(fontWeight: FontWeight.bold),
+//               ),
+//               SizedBox(height: 16.0),
+//               // Order details display
+//               Text(
+//                 'Your Order:',
+//                 style: TextStyle(fontWeight: FontWeight.bold),
+//               ),
+//               ...widget.cart
+//                   .map((product) => Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Text(product.productTitle.toString()),
+//                           Text(
+//                               '\$${(product.productPrice! * product.quantity).toString()}'),
+//                           SizedBox(height: 8.0),
+//                         ],
+//                       ))
+//                   .toList(),
+//               SizedBox(height: 16.0),
+//               // Order and delivery date display
+//               Text(
+//                 'Order will be delivered by:',
+//                 style: TextStyle(fontWeight: FontWeight.bold),
+//               ),
+//               Text(
+//                 DateFormat('dd-MM-yyyy').format(
+//                     generateRandomDate()), // Generate a random delivery date
+//               ),
+//             ],
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+//   // Text(
+//   //             'Total Amount: \$${totalAmount.toStringAsFixed(2)}',
+//   //             style: TextStyle(fontWeight: FontWeight.bold),
+//   //           ),
