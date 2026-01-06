@@ -21,16 +21,16 @@ The goal of Grainbee is to make the **Trading Corporation of Bangladesh (TCB) ra
 - 🧍‍♂️ **Impact**  
   Many low‑income families do not receive their full entitled ration benefits.  
 - 🚀 **Vision**  
-  Use a **blockchain‑backed digital platform** so every ration transaction is traceable, tamper‑evident, and visible to authorities in near real time.[web:186][web:188]
+  Use a **blockchain‑backed digital platform** so every ration transaction is traceable, tamper‑evident, and visible to authorities in near real time.
 
-This repository is the **frontend app** that officers, dealers, or citizens use; all trusted data and business logic live in the **Grainbee_Blockchain** backend.[web:81][web:190]
+This repository is the **frontend app** that officers, dealers, or citizens use; all trusted data and business logic live in the **Grainbee_Blockchain** backend.
 
 ---
 
 ## 🔗 Backend Connection
 
 - **Backend repo**: [`JonyBepary/Grainbee_Blockchain`](https://github.com/JonyBepary/Grainbee_Blockchain)  
-- **Technology**: Hyperledger Fabric–based blockchain for ration records, member registries, and distribution events.[web:190]  
+- **Technology**: Hyperledger Fabric–based blockchain for ration records, member registries, and distribution events.
 - The app communicates with REST/gRPC APIs exposed by the Fabric network (gateway service), so:
   - Every issued ration card,
   - Every pickup,
@@ -53,7 +53,7 @@ Aligned directly with the TCB problem:
 
 - ✅ **Tamperproof Ration Records**
   - All distribution events (who picked up what, when, where) are persisted on the Fabric ledger.
-  - Prevents double‑dipping, fake entries, and manual alteration of history.[web:190]
+  - Prevents double‑dipping, fake entries, and manual alteration of history.
 
 - 🔍 **QR‑Based Pickup Verification**
   - Scan member ration QR code at pickup points.
@@ -76,7 +76,7 @@ Aligned directly with the TCB problem:
 - **Language**: Dart  
 - **Architecture**: Screen + service + model structure (can be evolved into feature‑based or MVVM)  
 - **Networking**: `http` / API client to talk to Grainbee_Blockchain gateway  
-- **Backend**: Hyperledger Fabric (via `Grainbee_Blockchain`) for secure, immutable ration data.[web:190]
+- **Backend**: Hyperledger Fabric (via `Grainbee_Blockchain`) for secure, immutable ration data.
 
 ---
 
