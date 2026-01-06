@@ -6,7 +6,7 @@
 [![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 [![Backend](https://img.shields.io/badge/Backend-Grainbee_Blockchain-2E7D32?style=for-the-badge&logo=hyperledger)](https://github.com/JonyBepary/Grainbee_Blockchain)
 
-**Grainbee** is a Flutter-based mobile client for a **blockchain-powered TCB ration distribution system**, built to work with the Hyperledger Fabric backend in `JonyBepary/Grainbee_Blockchain`.[web:81][web:190]
+**Grainbee** is a Flutter-based mobile client for a **blockchain-powered TCB ration distribution system**, built to work with the Hyperledger Fabric backend in `JonyBepary/Grainbee_Blockchain`.
 
 </div>
 
@@ -65,8 +65,6 @@ Aligned directly with the TCB problem:
     - Audit distribution by location/time.
     - Detect anomalies and fraud patterns.
     - Export data for policy and reporting.
-
-*(Exact screens/endpoints depend on your implementation, but the app is designed around these flows.)*
 
 ---
 
